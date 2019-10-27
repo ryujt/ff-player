@@ -4,6 +4,8 @@
 #include <string>
 #include <SDL2/SDL.h>
 
+#pragma comment(lib, "sdl2maind.lib")
+
 using namespace std;
 
 class WindowSDL {

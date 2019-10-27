@@ -192,6 +192,7 @@ public:
 	/** 오디오 출력 장치를 사용할 수 있는가? */
 	bool isActive() { return Pa_IsStreamActive(stream_) == 1; }
 
+	/** 출력이 끝나지 않은 패킷의 갯수 */
 	int getDelayCount() { return queue_.size(); }
 
 	/** OnError 이벤트 핸들러를 지정한다.

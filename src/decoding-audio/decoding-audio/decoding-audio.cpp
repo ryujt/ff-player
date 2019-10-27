@@ -1,25 +1,11 @@
 #include <stdio.h>
 #include <Windows.h>
-#include <ryulib/base.hpp>
-#include <ryulib/ThreadQueue.hpp>
-#include <SDL2/SDL.h>
+#include <ryulib/sdl_audio.hpp>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libswresample/swresample.h>
-}
-
-#pragma comment(lib, "sdl2maind.lib")
-
-void audio_callback(void* udata, Uint8* stream, int len)
-{
-	ThreadQueue<Memory*>* queue = (ThreadQueue<Memory*>*) udata;
-	Memory* memory; 
-	if (queue->pop(memory)) {
-		memcpy(stream, memory->getData(), memory->getSize());
-		delete memory;
-	}
 }
 
 int main(int argc, char* argv[])
@@ -49,21 +35,9 @@ int main(int argc, char* argv[])
 	if (avcodec_parameters_to_context(ctx_codec, ctx_audio) != 0)  return -3;
 	if (avcodec_open2(ctx_codec, codec, NULL) < 0) return -3;
 
-	ThreadQueue<Memory*> queue;
-
 	// 오디오를 출력할 장치 오픈
-	SDL_AudioSpec audio_spec;
-	SDL_memset(&audio_spec, 0, sizeof(audio_spec));
-	audio_spec.freq = ctx_audio->sample_rate;
-	audio_spec.format = AUDIO_F32LSB;
-	audio_spec.channels = ctx_audio->channels;
-	audio_spec.samples = 1024;
-	audio_spec.callback = audio_callback;
-	audio_spec.userdata = &queue;
-	if(SDL_OpenAudio(&audio_spec, NULL) < 0) {
-		printf("SDL_OpenAudio: %s\n", SDL_GetError());
-		return -4;
-	}
+	AudioSDL audio;
+	audio.open(ctx_audio->channels, ctx_audio->sample_rate, 1024);
 
 	// 오디오 포멧 변환 (resampling)
 	SwrContext* swr = swr_alloc_set_opts(
@@ -113,13 +87,11 @@ int main(int argc, char* argv[])
 				reframe->format = AV_SAMPLE_FMT_FLT;
 				int ret = swr_convert_frame(swr, reframe, frame);
 
-				// TODO: 데이터크기가 sample 크기와 맞지 않은 경우 처리
 				int data_size = av_samples_get_buffer_size(NULL, ctx_codec->channels, frame->nb_samples, (AVSampleFormat) reframe->format, 0);
-				queue.push(new Memory(reframe->data[0], data_size));
-				SDL_PauseAudio(0);
+				audio.play(reframe->data[0], data_size);
 
 				// 음성이 처리 될 때까지 기다리기
-				while (queue.size() > 2) Sleep(1);
+				while (audio.getDelayCount() > 2) Sleep(1);
 			}
 		}
 
