@@ -17,6 +17,11 @@ using namespace std;
 
 class AudioSDL {
 public:
+	/** 오디오를 출력하기 위한 장치를 오픈합니다.
+	@param channels 오디오의 채널 수. 1: 모노, 2: 스테레오
+	@param sampe_rate 오디오의 sampling rate.
+	@param fpb 한 번에 처리할 프레임의 갯수
+	*/
 	bool open(int channels, int sample_rate, int fpb)
 	{
 		channels_ = channels;
@@ -40,6 +45,10 @@ public:
 		return true;
 	}
 
+	/**	오디오를 출력합니다.
+	@param data 출력할 오디오 데이터
+	@param size 출력할 오디오 데이터의 크기
+	*/
 	void play(void* data, int size)
 	{
 		packet_reader_.write(data, size);

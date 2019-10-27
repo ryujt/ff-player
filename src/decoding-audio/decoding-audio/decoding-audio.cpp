@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 	AudioSDL audio;
 	audio.open(ctx_audio->channels, ctx_audio->sample_rate, 1024);
 
-	// 오디오 포멧 변환 (resampling)
+	// 오디오 포멧 변환 (resampling) 준비
 	SwrContext* swr = swr_alloc_set_opts(
 		NULL,
 		ctx_audio->channel_layout,
