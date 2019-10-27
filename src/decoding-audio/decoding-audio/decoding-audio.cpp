@@ -1,16 +1,32 @@
 #include <stdio.h>
-#include <ryulib/AudioIO.hpp>
+#include <Windows.h>
+#include <ryulib/base.hpp>
+#include <ryulib/ThreadQueue.hpp>
+#include <SDL2/SDL.h>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
+#include <libswresample/swresample.h>
+}
+
+#pragma comment(lib, "sdl2maind.lib")
+
+void audio_callback(void* udata, Uint8* stream, int len)
+{
+	ThreadQueue<Memory*>* queue = (ThreadQueue<Memory*>*) udata;
+	Memory* memory; 
+	if (queue->pop(memory)) {
+		memcpy(stream, memory->getData(), memory->getSize());
+		delete memory;
+	}
 }
 
 int main(int argc, char* argv[])
 {
 	string filename = "D:/Work/test.mp4";
 
-	// 파일(비디오 소스) 오픈
+	// 파일(오디오 소스) 오픈
 	AVFormatContext* ctx_format = NULL;
 	if (avformat_open_input(&ctx_format, filename.c_str(), NULL, NULL) != 0) return -1;
 	if (avformat_find_stream_info(ctx_format, NULL) < 0) return -1;
@@ -33,15 +49,42 @@ int main(int argc, char* argv[])
 	if (avcodec_parameters_to_context(ctx_codec, ctx_audio) != 0)  return -3;
 	if (avcodec_open2(ctx_codec, codec, NULL) < 0) return -3;
 
+	ThreadQueue<Memory*> queue;
+
 	// 오디오를 출력할 장치 오픈
-	Audio::init();
-	AudioOutput audio_out(ctx_audio->channels, ctx_audio->sample_rate, 1024);
-	audio_out.open();
+	SDL_AudioSpec audio_spec;
+	SDL_memset(&audio_spec, 0, sizeof(audio_spec));
+	audio_spec.freq = ctx_audio->sample_rate;
+	audio_spec.format = AUDIO_F32LSB;
+	audio_spec.channels = ctx_audio->channels;
+	audio_spec.samples = 1024;
+	audio_spec.callback = audio_callback;
+	audio_spec.userdata = &queue;
+	if(SDL_OpenAudio(&audio_spec, NULL) < 0) {
+		printf("SDL_OpenAudio: %s\n", SDL_GetError());
+		return -4;
+	}
+
+	// 오디오 포멧 변환 (resampling)
+	SwrContext* swr = swr_alloc_set_opts(
+		NULL,
+		ctx_audio->channel_layout,
+		AV_SAMPLE_FMT_FLT,
+		ctx_audio->sample_rate,
+		ctx_audio->channel_layout,
+		(AVSampleFormat) ctx_audio->format,
+		ctx_audio->sample_rate,
+		0,                   
+		NULL);
+	swr_init(swr);
 
 	printf("channels: %d, sample_rate: %d, %d \n", ctx_audio->channels, ctx_audio->sample_rate, ctx_audio->bit_rate);
 
 	AVFrame* frame = av_frame_alloc();
 	if (!frame) return -4;
+
+	AVFrame* reframe = av_frame_alloc();
+	if (!reframe) return -4;
 
 	AVPacket packet;
 
@@ -64,12 +107,18 @@ int main(int argc, char* argv[])
 					return -5;
 				}
 
-				// 디코딩된 영상을 출력
-				int data_size = av_samples_get_buffer_size(NULL, ctx_codec->channels, frame->nb_samples, ctx_codec->sample_fmt, 1);
-				audio_out.play(frame->data[0], data_size);
+				// 포멧 변환
+				reframe->channel_layout = frame->channel_layout;
+				reframe->sample_rate = frame->sample_rate;
+				reframe->format = AV_SAMPLE_FMT_FLT;
+				int ret = swr_convert_frame(swr, reframe, frame);
+
+				int data_size = av_samples_get_buffer_size(NULL, ctx_codec->channels, frame->nb_samples, (AVSampleFormat) reframe->format, 0);
+				queue.push(new Memory(reframe->data[0], data_size));
+				SDL_PauseAudio(0);
 
 				// 음성이 처리 될 때까지 기다리기
-				while (audio_out.getDelayCount() > 3) Sleep(1);
+				while (queue.size() > 2) Sleep(1);
 			}
 		}
 
