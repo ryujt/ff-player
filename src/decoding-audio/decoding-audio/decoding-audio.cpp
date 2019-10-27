@@ -113,6 +113,7 @@ int main(int argc, char* argv[])
 				reframe->format = AV_SAMPLE_FMT_FLT;
 				int ret = swr_convert_frame(swr, reframe, frame);
 
+				// TODO: 데이터크기가 sample 크기와 맞지 않은 경우 처리
 				int data_size = av_samples_get_buffer_size(NULL, ctx_codec->channels, frame->nb_samples, (AVSampleFormat) reframe->format, 0);
 				queue.push(new Memory(reframe->data[0], data_size));
 				SDL_PauseAudio(0);
