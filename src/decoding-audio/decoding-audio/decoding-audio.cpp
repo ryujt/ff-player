@@ -68,12 +68,12 @@ int main(int argc, char* argv[])
 				int data_size = av_samples_get_buffer_size(NULL, ctx_codec->channels, frame->nb_samples, ctx_codec->sample_fmt, 1);
 				audio_out.play(frame->data[0], data_size);
 
-				// TODO: 음성이 처리 될 때까지 기다리기
-				Sleep(10);
+				// 음성이 처리 될 때까지 기다리기
+				while (audio_out.getDelayCount() > 3) Sleep(1);
 			}
-
-			av_packet_unref(&packet);
 		}
+
+		av_packet_unref(&packet);
 	}
 
 	return 0;

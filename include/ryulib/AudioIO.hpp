@@ -87,7 +87,7 @@ public:
 	/** 오디오가 캡쳐되는 중인지 알려준다.
 	@return true: 오디오 캡쳐 중, false: 오디오 캡쳐가 중단됨
 	*/
-	bool is_active()
+	bool isActive()
 	{
 		return Pa_IsStreamActive(stream_) == 1;
 	}
@@ -106,10 +106,8 @@ private:
 	static int recordCallback(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer, 
 		const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *userData) 
 	{
-
 		AudioInput *audio_input = (AudioInput *) userData;
 		if (audio_input->on_data_ != nullptr) audio_input->on_data_(audio_input, inputBuffer, audio_input->buffer_size_);
-
 		return paContinue;
 	}
 
@@ -133,7 +131,6 @@ public:
 	AudioOutput(int channels, int sampe_rate, int fpb)
 		: channels_(channels), sampe_rate_(sampe_rate), fpb_(fpb), buffer_size_(SAMPLE_SIZE * fpb * channels) 
 	{
-
 		DebugOutput::trace("AudioOutput - buffer_size_: %d \n", buffer_size_);
 
 		mute_ = malloc(buffer_size_);
@@ -193,7 +190,9 @@ public:
 	}
 
 	/** 오디오 출력 장치를 사용할 수 있는가? */
-	bool is_active() { return Pa_IsStreamActive(stream_) == 1; }
+	bool isActive() { return Pa_IsStreamActive(stream_) == 1; }
+
+	int getDelayCount() { return queue_.size(); }
 
 	/** OnError 이벤트 핸들러를 지정한다.
 	@param event 에러가 났을 때 실행될 이벤트 핸들러
@@ -207,9 +206,7 @@ private:
 		PaStreamCallbackFlags statusFlags,
 		void *userData) 
 	{
-
 		AudioOutput *audio_output = (AudioOutput *) userData;
-
 		Memory* memory;
 		if (audio_output->queue_.pop(memory)) {
 			memcpy(outputBuffer, memory->getData(), memory->getSize());
@@ -217,7 +214,6 @@ private:
 		} else {
 			memcpy(outputBuffer, audio_output->mute_, audio_output->buffer_size_);
 		}
-
 		return paContinue;
 	}
 
