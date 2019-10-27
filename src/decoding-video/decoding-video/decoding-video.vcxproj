@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{DF6AF6BE-8EEE-4583-AAAC-6D8A2B278166}</ProjectGuid>
+    <ProjectGuid>{9A91D7DA-DCE9-489F-9B8F-4B5555091FE7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>test02</RootNamespace>
+    <RootNamespace>decodingvideo</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -152,7 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="test02.cpp" />
+    <ClCompile Include="decoding-video.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
