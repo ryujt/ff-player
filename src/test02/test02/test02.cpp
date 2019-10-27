@@ -50,7 +50,10 @@ int main(int argc, char* argv[])
 	WindowSDL window;
 	window.open("ffmpeg", pCtxVideoCode->width, pCtxVideoCode->height);
 
-	AudioOutput audio_out(pCtxAudioCode->channels, pCtxAudioCode->sample_rate);
+	printf("channels: %d, sample_rate: %d, %d \n", pCtxAudioCode->channels, pCtxAudioCode->sample_rate, pCtxAudioCode->bit_rate);
+
+	Audio::init();
+	AudioOutput audio_out(pCtxAudioCode->channels, pCtxAudioCode->sample_rate, 1024);
 	audio_out.open();
 
 	AVPacket packet;
@@ -95,7 +98,7 @@ int main(int argc, char* argv[])
 
 				int data_size = av_samples_get_buffer_size(NULL, pCtxAudioCode->channels, frame->nb_samples, pCtxAudioCode->sample_fmt, 1);
 				audio_out.play(frame->data[0], data_size);
-				//Sleep(20);
+				Sleep(10);
 			}
 
 			av_packet_unref(&packet);
