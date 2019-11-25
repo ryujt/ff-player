@@ -29,31 +29,31 @@ int main(int argc, char* argv[])
 	if (audio_stream == -1) return -2;
 
 	// 오디오 코덱 오픈
-	AVCodecParameters* ctx_audio = ctx_format->streams[audio_stream]->codecpar;
-	AVCodec* codec = avcodec_find_decoder(ctx_audio->codec_id);
+	AVCodecParameters* parameters = ctx_format->streams[audio_stream]->codecpar;
+	AVCodec* codec = avcodec_find_decoder(parameters->codec_id);
 	if (codec == NULL) return -2;
 	AVCodecContext* ctx_codec = avcodec_alloc_context3(codec);
-	if (avcodec_parameters_to_context(ctx_codec, ctx_audio) != 0)  return -3;
+	if (avcodec_parameters_to_context(ctx_codec, parameters) != 0)  return -3;
 	if (avcodec_open2(ctx_codec, codec, NULL) < 0) return -3;
 
 	// 오디오를 출력할 장치 오픈
 	AudioSDL audio;
-	audio.open(ctx_audio->channels, ctx_audio->sample_rate, 1024);
+	audio.open(parameters->channels, parameters->sample_rate, 1024);
 
 	// 오디오 포멧 변환 (resampling) 준비
 	SwrContext* swr = swr_alloc_set_opts(
 		NULL,
-		ctx_audio->channel_layout,
+		parameters->channel_layout,
 		AV_SAMPLE_FMT_FLT,
-		ctx_audio->sample_rate,
-		ctx_audio->channel_layout,
-		(AVSampleFormat) ctx_audio->format,
-		ctx_audio->sample_rate,
+		parameters->sample_rate,
+		parameters->channel_layout,
+		(AVSampleFormat) parameters->format,
+		parameters->sample_rate,
 		0,                   
 		NULL);
 	swr_init(swr);
 
-	printf("channels: %d, sample_rate: %d, %d \n", ctx_audio->channels, ctx_audio->sample_rate, ctx_audio->bit_rate);
+	printf("channels: %d, sample_rate: %d, %d \n", parameters->channels, parameters->sample_rate, parameters->bit_rate);
 
 	AVFrame* frame = av_frame_alloc();
 	if (!frame) return -4;

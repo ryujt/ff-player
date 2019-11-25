@@ -1,6 +1,7 @@
 #ifndef RYULIB_BASE_HPP
 #define RYULIB_BASE_HPP
 
+#include <string>
 #include <cstring>
 #include <functional>
 

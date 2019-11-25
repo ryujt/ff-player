@@ -29,11 +29,11 @@ int main(int argc, char* argv[])
 	if (video_stream == -1) return -2;
 
 	// 비디오 코덱 오픈
-	AVCodecParameters* ctx_video = ctx_format->streams[video_stream]->codecpar;
-	AVCodec* codec = avcodec_find_decoder(ctx_video->codec_id);
+	AVCodecParameters* parameters = ctx_format->streams[video_stream]->codecpar;
+	AVCodec* codec = avcodec_find_decoder(parameters->codec_id);
 	if (codec == NULL) return -3;
 	AVCodecContext* ctx_codec = avcodec_alloc_context3(codec);
-	if (avcodec_parameters_to_context(ctx_codec, ctx_video) != 0)  return -3;
+	if (avcodec_parameters_to_context(ctx_codec, parameters) != 0)  return -3;
 	if (avcodec_open2(ctx_codec, codec, NULL) < 0) return -3;
 
 	// 비디오를 출력할 윈도우 오픈
