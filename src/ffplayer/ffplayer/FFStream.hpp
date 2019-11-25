@@ -22,22 +22,26 @@ public:
 
 	void play()
 	{
-
+		is_playing_ = true;
 	}
 
 	void pause()
 	{
-
+		is_playing_ = false;
 	}
 
-	bool is_playing()
-	{
-		return true;
-	}
+	bool isPlaying() { return is_playing_; }
 
 	AVPacket* read()
 	{
-		return nullptr;
+		AVPacket* packet = av_packet_alloc();
+
+		if (av_read_frame(context_, packet) < 0) {
+			av_packet_free(&packet);
+			return nullptr;
+		}
+
+		return packet;
 	}
 
 	AVFormatContext* getContext()
@@ -47,4 +51,5 @@ public:
 
 private:
 	AVFormatContext* context_ = nullptr;
+	bool is_playing_ = false;
 };

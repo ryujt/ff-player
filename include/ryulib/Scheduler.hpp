@@ -86,6 +86,8 @@ public:
 		thread_->sleep(millis);
 	}
 
+	bool is_empty() { return queue_.is_empty(); }
+
 	void setOnTask(const TaskEvent& value) { on_task_ = value; }
 	void setOnRepeat(const VoidEvent& value) { on_repeat_ = value; }
 

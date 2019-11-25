@@ -77,6 +77,8 @@ private:
 		if (queue->pop(memory)) {
 			memcpy(stream, memory->getData(), memory->getSize());
 			delete memory;
+		} else {
+			ZeroMemory(stream,len);
 		}
 	}
 

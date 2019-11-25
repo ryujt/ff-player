@@ -6,38 +6,40 @@ extern "C" {
 #include <libavutil/imgutils.h>	
 }
 
-class VideoOutput {
+class FFVideo {
 public:
 	bool open(AVFormatContext* context)
 	{
 		for (int i = 0; i < context->nb_streams; i++)
 			if (context->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-				stream_ = i;
+				stream_index_ = i;
 				break;
 			}
-		if (stream_ == -1) {
-			printf("VideoOutput.open - stream_ == -1 \n");
+		if (stream_index_ == -1) {
+			printf("FFVideo.open - stream_ == -1 \n");
 			return false;
 		}
 
-		parameters_ = context->streams[stream_]->codecpar;
+		parameters_ = context->streams[stream_index_]->codecpar;
 		codec_ = avcodec_find_decoder(parameters_->codec_id);
 		if (codec_ == NULL) {
-			printf("VideoOutput.open - codec == NULL \n");
+			printf("FFVideo.open - codec == NULL \n");
 			return false;
 		}
 		
 		context_ = avcodec_alloc_context3(codec_);
 		if (avcodec_parameters_to_context(context_, parameters_) != 0) 
 		{
-			printf("VideoOutput.open - avcodec_parameters_to_context \n");
+			printf("FFVideo.open - avcodec_parameters_to_context \n");
 			return false;
 		}
 
 		if (avcodec_open2(context_, codec_, NULL) < 0) {
-			printf("VideoOutput.open - avcodec_open2 \n");
+			printf("FFVideo.open - avcodec_open2 \n");
 			return false;
 		}
+
+		return true;
 	}
 
 	void close()
@@ -50,12 +52,15 @@ public:
 
 	}
 
-	bool is_empty()
+	int getStreamIndex() { return stream_index_; }
+
+	bool isEmpty()
 	{
 		return true;
 	}
+
 private:
-	int stream_ = -1;
+	int stream_index_ = -1;
 	AVCodecParameters* parameters_ = nullptr;
 	AVCodecContext* context_ = nullptr;
 	AVCodec* codec_ = nullptr;

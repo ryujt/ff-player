@@ -1,9 +1,9 @@
 #pragma once
 
 #include <ryulib/Scheduler.hpp>
-#include "VideoStream.hpp"
-#include "AudioOuput.hpp"
-#include "VideoOutput.hpp"
+#include "FFStream.hpp"
+#include "FFAudio.hpp"
+#include "FFVideo.hpp"
 
 const int TASK_OPEN = 1;
 const int TASK_CLOSE = 2;
@@ -46,20 +46,21 @@ public:
 		});
 
 		scheduler_.setOnRepeat([&](){
-			if (stream_.is_playing()) {
-				if ((audio_.is_empty()) || (video_.is_empty())) {
+			if (stream_.isPlaying() == true) {
+				if (audio_.isEmpty()) {
 					AVPacket* packet = stream_.read();
 					if (packet != nullptr) {
-						audio_.write(packet);
-						video_.write(packet);
+						if (packet->stream_index = audio_.getStreamIndex()) audio_.write(packet);
+						else if (packet->stream_index = video_.getStreamIndex()) video_.write(packet);
+						else av_packet_free(&packet);
 					} else {
-						if ((audio_.is_empty()) && (video_.is_empty())) {
-							// TODO: EOF
-						}
+						// TODO: EOF
 					}
 				}
 			}
 		});
+
+		scheduler_.start();
 	}
 
 	~FFPlayer()
@@ -90,6 +91,6 @@ public:
 private:
 	Scheduler scheduler_;
 	VideoStream stream_;
-	AudioOutput audio_;
-	VideoOutput video_;
+	FFAudio audio_;
+	FFVideo video_;
 };

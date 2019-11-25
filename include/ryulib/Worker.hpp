@@ -70,6 +70,8 @@ public:
 
 	void setOnTask(const TaskEvent& value) { on_task_ = value; }
 
+	bool is_empty() { return queue_.is_empty(); }
+
 private:
 	bool started_ = false;
 	SuspensionQueue<TaskOfWorker*> queue_;

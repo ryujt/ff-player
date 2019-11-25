@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
     FFPlayer player;
 	player.open("D:/Work/test.mkv");	
@@ -14,11 +14,13 @@ int main()
 		printf("(p)lay, p(a)use, (q)uit: ");
 		getline(cin, line);
 
-		if (line == "P") player.play();
+		if (line == "p") player.play();
 		if (line == "a") player.pause();
 
 		if (line == "q") break;
 	}
 
 	player.close();
+
+	return 0;
 }

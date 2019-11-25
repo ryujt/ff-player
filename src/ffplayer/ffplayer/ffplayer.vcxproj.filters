@@ -23,13 +23,13 @@
     <ClInclude Include="FFPlayer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VideoStream.hpp">
+    <ClInclude Include="FFVideo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AudioOuput.hpp">
+    <ClInclude Include="FFAudio.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VideoOutput.hpp">
+    <ClInclude Include="FFStream.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

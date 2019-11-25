@@ -13,12 +13,12 @@ int main(int argc, char* argv[])
 	//string filename = "D:/Work/test.mp4";
 	string filename = "https://etc.s3.ap-northeast-2.amazonaws.com/AsomeIT.mp4";
 
-	// ÆÄÀÏ(¿Àµð¿À ¼Ò½º) ¿ÀÇÂ
+	// ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò½ï¿½) ï¿½ï¿½ï¿½ï¿½
 	AVFormatContext* ctx_format = NULL;
 	if (avformat_open_input(&ctx_format, filename.c_str(), NULL, NULL) != 0) return -1;
 	if (avformat_find_stream_info(ctx_format, NULL) < 0) return -1;
 	
-	// ¿Àµð¿À ½ºÆ®¸² Ã£±â
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ Ã£ï¿½ï¿½
 	int audio_stream = -1;
 	for (int i = 0; i < ctx_format->nb_streams; i++) {
 		if (ctx_format->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 	}
 	if (audio_stream == -1) return -2;
 
-	// ¿Àµð¿À ÄÚµ¦ ¿ÀÇÂ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
 	AVCodecParameters* parameters = ctx_format->streams[audio_stream]->codecpar;
 	AVCodec* codec = avcodec_find_decoder(parameters->codec_id);
 	if (codec == NULL) return -2;
@@ -36,11 +36,11 @@ int main(int argc, char* argv[])
 	if (avcodec_parameters_to_context(ctx_codec, parameters) != 0)  return -3;
 	if (avcodec_open2(ctx_codec, codec, NULL) < 0) return -3;
 
-	// ¿Àµð¿À¸¦ Ãâ·ÂÇÒ ÀåÄ¡ ¿ÀÇÂ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½
 	AudioSDL audio;
 	audio.open(parameters->channels, parameters->sample_rate, 1024);
 
-	// ¿Àµð¿À Æ÷¸ä º¯È¯ (resampling) ÁØºñ
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ (resampling) ï¿½Øºï¿½
 	SwrContext* swr = swr_alloc_set_opts(
 		NULL,
 		parameters->channel_layout,
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 		parameters->channel_layout,
 		(AVSampleFormat) parameters->format,
 		parameters->sample_rate,
-		0,                   
+		0,
 		NULL);
 	swr_init(swr);
 
@@ -63,9 +63,9 @@ int main(int argc, char* argv[])
 
 	AVPacket packet;
 
-	// ÆÄÀÏ(¿Àµð¿À ¼Ò½º) ¹Ýº¹ÇØ¼­ ³¡±îÁö ÀÐ±â
+	// ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò½ï¿½) ï¿½Ýºï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½
 	while (av_read_frame(ctx_format, &packet) >= 0) {
-		// ¿Àµð¿À ½ºÆ®¸²¸¸ Ã³¸®
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
 		if (packet.stream_index == audio_stream) {
 			int ret = avcodec_send_packet(ctx_codec, &packet) < 0;
 			if (ret < 0) {
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 					return -5;
 				}
 
-				// Æ÷¸ä º¯È¯
+				// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
 				reframe->channel_layout = frame->channel_layout;
 				reframe->sample_rate = frame->sample_rate;
 				reframe->format = AV_SAMPLE_FMT_FLT;
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 				int data_size = av_samples_get_buffer_size(NULL, ctx_codec->channels, frame->nb_samples, (AVSampleFormat) reframe->format, 0);
 				audio.play(reframe->data[0], data_size);
 
-				// À½¼ºÀÌ Ã³¸® µÉ ¶§±îÁö ±â´Ù¸®±â
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½
 				while (audio.getDelayCount() > 2) Sleep(1);
 			}
 		}
