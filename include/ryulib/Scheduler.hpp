@@ -2,6 +2,7 @@
 #define RYU_SCHEDULER_HPP
 
 
+#include <ryulib/base.hpp>
 #include <ryulib/SimpleThread.hpp>
 #include <ryulib/ThreadQueue.hpp>
 
@@ -24,9 +25,6 @@ public:
 		tag = g;
 	}
 };
-
-typedef function<void(int, const string, void*, int, int)> TaskEvent;
-typedef function<void()> RepeatEvent;
 
 class Scheduler {
 public:
@@ -89,7 +87,7 @@ public:
 	}
 
 	void setOnTask(const TaskEvent& value) { on_task_ = value; }
-	void setOnRepeat(const RepeatEvent& value) { on_repeat_ = value; }
+	void setOnRepeat(const VoidEvent& value) { on_repeat_ = value; }
 
 private:
 	bool started_ = false;
@@ -116,7 +114,7 @@ private:
 	};
 
 	TaskEvent on_task_ = nullptr;
-	RepeatEvent on_repeat_ = nullptr;
+	VoidEvent on_repeat_ = nullptr;
 };
 
 

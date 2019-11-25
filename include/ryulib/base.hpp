@@ -8,11 +8,14 @@ using namespace std;
 
 class Memory;
 
+typedef function<void()> VoidEvent;
 typedef function<void(const void*)> NotifyEvent;
+typedef function<void(const void*, const string)> StringEvent;
 typedef function<void(const void*, int)> IntegerEvent;
 typedef function<void(const void*, const Memory*)> MemoryEvent;
 typedef function<void(const void*, const void*, int)> DataEvent;
 typedef function<bool(const void*)> AskEvent;
+typedef function<void(int, const string, const void*, int, int)> TaskEvent;
 
 class Memory {
 public:
