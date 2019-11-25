@@ -16,14 +16,16 @@ class FFPlayer {
 public:
 	FFPlayer()
 	{
-		scheduler_.setOnTask([&](int task, const string text, void* data, int size, int tag){
+		scheduler_.setOnTask([&](int task, const string text, const void* data, int size, int tag){
 			switch(task) {
 				case TASK_OPEN: {
 					if (stream_.open(text)) {
+						// TODO: open error
 						audio_.open( stream_.getContext() );
 						video_.open( stream_.getContext() );
 					} else {
 						// TODO: open error
+						printf("open error \n");
 					}
 				} break;
 
@@ -58,6 +60,11 @@ public:
 				}
 			}
 		});
+	}
+
+	~FFPlayer()
+	{
+		scheduler_.terminateNow();
 	}
 
 	void open(string filename)
