@@ -11,8 +11,7 @@ extern "C" {
 
 int main(int argc, char* argv[])
 {
-	//string filename = "D:/Work/test.mp4";
-	string filename = "https://etc.s3.ap-northeast-2.amazonaws.com/AsomeIT.mp4";
+	string filename = "D:/Work/test.mkv";
 
 	// 파일(비디오 소스) 오픈
 	AVFormatContext* ctx_format = NULL;
