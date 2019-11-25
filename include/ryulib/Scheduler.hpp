@@ -7,28 +7,26 @@
 
 using namespace std;
 
-const int TASK_STRING = -1;
-
 class TaskOfScheduler
 {
 public:
 	int task;
+	string text;
 	void* data;
 	int size;
 	int tag;
-	string text;
 
-	TaskOfScheduler(int t, void* d, int s, int g) {
+	TaskOfScheduler(int t, string txt, void* d, int s, int g) {
 		task = t;
+		text = txt;
 		data = d;
 		size = s;
 		tag = g;
 	}
 };
 
-typedef function<void(int, void*, int, int)> TaskEvent;
+typedef function<void(int, const string, void*, int, int)> TaskEvent;
 typedef function<void()> RepeatEvent;
-typedef function<void(const string)> StringEvent;
 
 class Scheduler {
 public:
@@ -61,33 +59,26 @@ public:
 		started_ = false;
 	}
 	
-	void add(string text) {
-		TaskOfScheduler* t = new TaskOfScheduler(TASK_STRING, nullptr, 0, 0);
-		t->text = text;
+	void add(int task) {
+		TaskOfScheduler* t = new TaskOfScheduler(task, "", nullptr, 0, 0);
 		queue_.push(t);
 		thread_->wakeUp();
 	}
 
-	void add(int task) {
-		if (task < 0) throw "task must higher than 0.";
-
-		TaskOfScheduler* t = new TaskOfScheduler(task, nullptr, 0, 0);
+	void add(int task, string text) {
+		TaskOfScheduler* t = new TaskOfScheduler(task, text, nullptr, 0, 0);
 		queue_.push(t);
 		thread_->wakeUp();
 	}
 
 	void add(int task, void* data) {
-		if (task < 0) throw "task must higher than 0.";
-
-		TaskOfScheduler* t = new TaskOfScheduler(task, data, 0, 0);
+		TaskOfScheduler* t = new TaskOfScheduler(task, "", data, 0, 0);
 		queue_.push(t);
 		thread_->wakeUp();
 	}
 
-	void add(int task, void* data, int size, int tag) {
-		if (task < 0) throw "task must higher than 0.";
-
-		TaskOfScheduler* t = new TaskOfScheduler(task, data, size, tag);
+	void add(int task, string text, void* data, int size, int tag) {
+		TaskOfScheduler* t = new TaskOfScheduler(task, "", data, size, tag);
 		queue_.push(t);
 		thread_->wakeUp();
 	}
@@ -108,10 +99,8 @@ private:
 		while (simpleThread->isTerminated() == false) {
 			TaskOfScheduler* t = queue_.pop();
 			if (t != NULL) {
-				if (t->task == TASK_STRING) {
-					if (on_string_ != nullptr) on_string_(t->text);
-				} else  if (on_task_ != nullptr) {
-					on_task_(t->task, t->data, t->size, t->tag);
+				if (on_task_ != nullptr) {
+					on_task_(t->task, t->text, t->data, t->size, t->tag);
 				}
 				delete t;
 			}
@@ -128,7 +117,6 @@ private:
 
 	TaskEvent on_task_ = nullptr;
 	RepeatEvent on_repeat_ = nullptr;
-	StringEvent on_string_ = nullptr;
 };
 
 
