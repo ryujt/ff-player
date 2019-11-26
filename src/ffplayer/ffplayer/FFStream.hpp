@@ -6,7 +6,7 @@ extern "C" {
 
 using namespace std;
 
-class VideoStream {
+class FFStream {
 public:
 	bool open(string filename)
 	{

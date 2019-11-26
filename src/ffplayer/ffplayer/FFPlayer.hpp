@@ -90,7 +90,7 @@ public:
 
 private:
 	Scheduler scheduler_;
-	VideoStream stream_;
+	FFStream stream_;
 	FFAudio audio_;
 	FFVideo video_;
 };

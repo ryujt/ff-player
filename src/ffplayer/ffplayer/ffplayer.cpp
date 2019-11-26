@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char* argv[])
 {
     FFPlayer player;
-	player.open("D:/Work/test.mkv");	
+	player.open("D:/Work/test.mp4");	
 
 	while (true) {
 		string line;
