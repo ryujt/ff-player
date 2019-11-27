@@ -23,6 +23,7 @@ public:
 
 	bool open(AVFormatContext* context)
 	{
+		stream_index_ = -1;
 		for (int i = 0; i < context->nb_streams; i++)
 			if (context->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
 				stream_index_ = i;
@@ -110,7 +111,7 @@ private:
 				return;
 			}
 
-			// Æ÷¸ä º¯È¯
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
 			reframe->channel_layout = frame->channel_layout;
 			reframe->sample_rate = frame->sample_rate;
 			reframe->format = AV_SAMPLE_FMT_FLT;

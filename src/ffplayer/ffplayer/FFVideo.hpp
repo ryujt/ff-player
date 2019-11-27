@@ -22,6 +22,7 @@ public:
 
 	bool open(AVFormatContext* context)
 	{
+		stream_index_ = -1;
 		for (int i = 0; i < context->nb_streams; i++)
 			if (context->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
 				stream_index_ = i;

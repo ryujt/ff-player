@@ -21,9 +21,8 @@ public:
 			switch (task) {
 				case TASK_OPEN: {
 					if (stream_.open(text)) {
-						printf("OK \n");
-						audio_.open( stream_.getContext() );
-						video_.open( stream_.getContext() );
+						if (audio_.open( stream_.getContext() )) printf("OK - audio_.open \n");
+						if (video_.open( stream_.getContext() )) printf("OK - video_.open \n");
 					} else {
 						printf("Error - stream_.open \n");
 					}
