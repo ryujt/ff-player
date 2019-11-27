@@ -9,6 +9,7 @@ class FFStream {
 public:
 	void open(string filename)
 	{
+
 	}
 
 	void close()
