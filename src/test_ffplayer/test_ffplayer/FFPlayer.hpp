@@ -35,22 +35,22 @@ public:
 				} break;
 
 				case TASK_PLAY: {
-					stream_.play();
+					scheduler_.start();
 				} break;
 
 				case TASK_PAUSE: {
-					stream_.pause(); 
+					scheduler_.stop(); 
 				} break;
 			}
 		});
 
 		scheduler_.setOnRepeat([&](){
-			if (stream_.isPlaying()) {
-				if (audio_.isEmpty()) {
-					int packet = stream_.read();
-					if (packet == 0) audio_.write(packet);
-					else if (packet == 1) video_.write(packet);
-				}
+			if (audio_.isEmpty()) {
+				AVPacket* packet = stream_.read();
+				printf("packet->stream_index: %d \n", packet->stream_index);
+
+				//if (packet == 0) audio_.write(packet);
+				//else if (packet == 1) video_.write(packet);
 			}
 		});
 	}

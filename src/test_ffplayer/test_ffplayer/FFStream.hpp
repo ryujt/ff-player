@@ -32,9 +32,16 @@ public:
 
 	}
 
-	int read()
+	AVPacket* read()
 	{
-		return 0;
+		AVPacket* packet = av_packet_alloc();
+
+		if (av_read_frame(context_, packet) < 0) {
+			av_packet_free(&packet);
+			return nullptr;
+		}
+
+		return packet;
 	}
 
 	bool isPlaying()
