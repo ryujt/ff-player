@@ -20,9 +20,13 @@ public:
 		scheduler_.setOnTask([&](int task, const string text, const void* data, int size, int tag){
 			switch (task) {
 				case TASK_OPEN: {
-					stream_.open(text);
-					audio_.open( stream_.getContext() );
-					video_.open( stream_.getContext() );
+					if (stream_.open(text)) {
+						printf("OK \n");
+						audio_.open( stream_.getContext() );
+						video_.open( stream_.getContext() );
+					} else {
+						printf("Error - stream_.open \n");
+					}
 				} break;
 
 				case TASK_CLOSE: {

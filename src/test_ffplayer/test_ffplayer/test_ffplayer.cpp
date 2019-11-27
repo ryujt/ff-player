@@ -11,7 +11,7 @@ int main()
 		string line;
 		getline(cin, line);
 
-		if (line == "o") player.open("");
+		if (line == "o") player.open("D:/Work/test1.mp4");
 		if (line == "c") player.close();
 		if (line == "p") player.play();
 		if (line == "a") player.pause();

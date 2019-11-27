@@ -2,7 +2,7 @@
 
 class FFVideo {
 public:
-	void open(int context)
+	void open(AVFormatContext* context)
 	{
 
 	}
