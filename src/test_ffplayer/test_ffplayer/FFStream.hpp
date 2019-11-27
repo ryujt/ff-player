@@ -7,7 +7,7 @@ using namespace std;
 
 class FFStream {
 public:
-	bool open(string filename)
+	void open(string filename)
 	{
 	}
 
