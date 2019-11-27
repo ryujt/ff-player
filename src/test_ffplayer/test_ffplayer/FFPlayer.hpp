@@ -47,10 +47,11 @@ public:
 		scheduler_.setOnRepeat([&](){
 			if (audio_.isEmpty()) {
 				AVPacket* packet = stream_.read();
-				printf("packet->stream_index: %d \n", packet->stream_index);
-
-				//if (packet == 0) audio_.write(packet);
-				//else if (packet == 1) video_.write(packet);
+				if (packet != nullptr) {
+					if (packet->stream_index == audio_.getStreamIndex()) audio_.write(packet);
+					//else if (packet == 1) video_.write(packet);
+					else av_packet_free(&packet);
+				}
 			}
 		});
 	}

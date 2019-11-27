@@ -2,7 +2,7 @@
 #include <iostream>
 #include "FFPlayer.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
     FFPlayer player;
 
