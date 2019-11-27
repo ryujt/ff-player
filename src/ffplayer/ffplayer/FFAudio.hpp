@@ -13,8 +13,8 @@ class FFAudio {
 public:
 	FFAudio()
 	{
-		frame = av_frame_alloc();
-		reframe = av_frame_alloc();
+		frame_ = av_frame_alloc();
+		reframe_ = av_frame_alloc();
 
 		worker_.setOnTask([&](int task, const string text, const void* data, int size, int tag){
 			decode_and_play((AVPacket*) data);
@@ -91,8 +91,8 @@ private:
 	Worker worker_;
 	AudioSDL audio_;
 	SwrContext* swr_;
-	AVFrame* frame = nullptr;
-	AVFrame* reframe = nullptr;
+	AVFrame* frame_ = nullptr;
+	AVFrame* reframe_ = nullptr;
 
 	void decode_and_play(AVPacket* packet)
 	{
@@ -103,7 +103,7 @@ private:
 		}	
 
 		while (ret >= 0) {
-			ret = avcodec_receive_frame(context_, frame);
+			ret = avcodec_receive_frame(context_, frame_);
 			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
 				break;
 			} else if (ret < 0) {
@@ -112,13 +112,13 @@ private:
 			}
 
 			// ���� ��ȯ
-			reframe->channel_layout = frame->channel_layout;
-			reframe->sample_rate = frame->sample_rate;
-			reframe->format = AV_SAMPLE_FMT_FLT;
-			int ret = swr_convert_frame(swr_, reframe, frame);
+			reframe_->channel_layout = frame_->channel_layout;
+			reframe_->sample_rate = frame_->sample_rate;
+			reframe_->format = AV_SAMPLE_FMT_FLT;
+			int ret = swr_convert_frame(swr_, reframe_, frame_);
 
-			int data_size = av_samples_get_buffer_size(NULL, context_->channels, frame->nb_samples, (AVSampleFormat) reframe->format, 0);
-			audio_.play(reframe->data[0], data_size);
+			int data_size = av_samples_get_buffer_size(NULL, context_->channels, frame_->nb_samples, (AVSampleFormat) reframe_->format, 0);
+			audio_.play(reframe_->data[0], data_size);
 		}
 
 		av_packet_free(&packet);

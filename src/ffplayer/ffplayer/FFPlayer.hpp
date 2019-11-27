@@ -36,31 +36,27 @@ public:
 				} break;
 
 				case TASK_PLAY: {
-					stream_.play();
+					scheduler_.start();
 				} break;
 
 				case TASK_PAUSE: {
-					stream_.pause();
+					scheduler_.stop();
 				} break;
 			}
 		});
 
 		scheduler_.setOnRepeat([&](){
-			if (stream_.isPlaying() == true) {
-				if (audio_.isEmpty()) {
-					AVPacket* packet = stream_.read();
-					if (packet != nullptr) {
-						if (packet->stream_index == audio_.getStreamIndex()) audio_.write(packet);
-						else if (packet->stream_index == video_.getStreamIndex()) video_.write(packet);
-						else av_packet_free(&packet);
-					} else {
-						// TODO: EOF
-					}
+			if (audio_.isEmpty()) {
+				AVPacket* packet = stream_.read();
+				if (packet != nullptr) {
+					if (packet->stream_index == audio_.getStreamIndex()) audio_.write(packet);
+					else if (packet->stream_index == video_.getStreamIndex()) video_.write(packet);
+					else av_packet_free(&packet);
+				} else {
+					// TODO: EOF
 				}
 			}
 		});
-
-		scheduler_.start();
 	}
 
 	~FFPlayer()

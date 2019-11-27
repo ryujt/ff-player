@@ -20,18 +20,6 @@ public:
 
 	}
 
-	void play()
-	{
-		is_playing_ = true;
-	}
-
-	void pause()
-	{
-		is_playing_ = false;
-	}
-
-	bool isPlaying() { return is_playing_; }
-
 	AVPacket* read()
 	{
 		AVPacket* packet = av_packet_alloc();
@@ -51,5 +39,4 @@ public:
 
 private:
 	AVFormatContext* context_ = nullptr;
-	bool is_playing_ = false;
 };

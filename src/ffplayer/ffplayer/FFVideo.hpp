@@ -13,7 +13,7 @@ class FFVideo {
 public:
 	FFVideo()
 	{
-		frame = av_frame_alloc();
+		frame_ = av_frame_alloc();
 
 		worker_.setOnTask([&](int task, const string text, const void* data, int size, int tag){
 			decode_and_play((AVPacket*) data);
@@ -81,7 +81,7 @@ private:
 	AVCodec* codec_ = nullptr;
 	Worker worker_;
 	WindowSDL video_;
-	AVFrame* frame = nullptr;
+	AVFrame* frame_ = nullptr;
 
 	void decode_and_play(AVPacket* packet)
 	{
@@ -92,7 +92,7 @@ private:
 		}	
 
 		while (ret >= 0) {
-			ret = avcodec_receive_frame(context_, frame);
+			ret = avcodec_receive_frame(context_, frame_);
 			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
 				break;
 			} else if (ret < 0) {
@@ -100,7 +100,7 @@ private:
 				return;
 			}
 
-			video_.showYUV(frame->data[0], frame->linesize[0], frame->data[1], frame->linesize[1], frame->data[2], frame->linesize[2]);
+			video_.showYUV(frame_->data[0], frame_->linesize[0], frame_->data[1], frame_->linesize[1], frame_->data[2], frame_->linesize[2]);
 		}
 
 		av_packet_free(&packet);
