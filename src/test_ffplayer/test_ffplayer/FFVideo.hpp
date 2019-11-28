@@ -1,5 +1,8 @@
 #pragma once
 
+#include <ryulib/Worker.hpp>
+#include <ryulib/sdl_window.hpp>
+
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
@@ -8,6 +11,15 @@ extern "C" {
 
 class FFVideo {
 public:
+	FFVideo()
+	{
+		frame_ = av_frame_alloc();
+
+		worker_.setOnTask([&](int tast, const string text, const void* data, int size, int tag){
+			decode_and_play((AVPacket*) data);
+		});
+	}
+
 	bool open(AVFormatContext* context)
 	{
 		stream_index_ = -1;
@@ -40,6 +52,8 @@ public:
 			return false;
 		}
 
+		video_.open("FF-Player", context_->width, context_->height);
+
 		return true;
 	}
 
@@ -48,9 +62,14 @@ public:
 
 	}
 
-	void write(int packet)
+	void write(AVPacket* packet)
 	{
+		worker_.add(0, packet);
+	}
 
+	int getStreamIndex()
+	{
+		return stream_index_;
 	}
 
 private:
@@ -58,4 +77,31 @@ private:
 	AVCodecParameters* parameters_ = nullptr;
 	AVCodec* codec_ = nullptr;
 	AVCodecContext* context_ = nullptr;
+	Worker worker_;
+	AVFrame* frame_ = nullptr;
+	WindowSDL video_;
+
+	void decode_and_play(AVPacket* packet)
+	{
+		int ret = avcodec_send_packet(context_, packet) < 0;
+		if (ret < 0) {
+			printf("FFVideo - Error sending a packet for decoding \n");
+			return;
+		}	
+
+		while (ret >= 0) {
+			ret = avcodec_receive_frame(context_, frame_);
+			if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+				break;
+			} else if (ret < 0) {
+				printf("Error sending a packet for decoding \n");
+				return;
+			}
+
+			video_.showYUV(frame_->data[0], frame_->linesize[0], frame_->data[1], frame_->linesize[1], frame_->data[2], frame_->linesize[2]);
+		}
+
+		av_packet_free(&packet);
+	}
+
 };

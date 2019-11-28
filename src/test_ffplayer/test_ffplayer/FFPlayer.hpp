@@ -49,7 +49,7 @@ public:
 				AVPacket* packet = stream_.read();
 				if (packet != nullptr) {
 					if (packet->stream_index == audio_.getStreamIndex()) audio_.write(packet);
-					//else if (packet == 1) video_.write(packet);
+					else if (packet->stream_index == video_.getStreamIndex()) video_.write(packet);
 					else av_packet_free(&packet);
 				}
 			}

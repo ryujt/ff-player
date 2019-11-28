@@ -83,7 +83,7 @@ public:
 
 	bool isEmpty()
 	{
-		return true;
+		return audio_.getDelayCount() < 2;
 	}
 
 	int getStreamIndex()
