@@ -35,6 +35,15 @@ public:
 		return packet;
 	}
 
+	void move(int ms)
+	{
+		int duration = context_->duration * 1000 / AV_TIME_BASE;
+		int target = ms;
+		int frameNumber = av_rescale(ms, context_->streams[0]->time_base.den, context_->streams[0]->time_base.num);
+		frameNumber = frameNumber / 1000;
+		avformat_seek_file(context_, 0, 0, frameNumber, duration, AVSEEK_FLAG_FRAME);
+	}
+
 	AVFormatContext* getContext()
 	{
 		return context_;

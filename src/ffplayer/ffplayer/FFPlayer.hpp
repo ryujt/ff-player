@@ -10,6 +10,7 @@ const int TASK_OPEN = 1;
 const int TASK_CLOSE = 2;
 const int TASK_PLAY = 3;
 const int TASK_PAUSE = 4;
+const int TASK_MOVE = 5;
 
 using namespace std;
 
@@ -50,6 +51,10 @@ public:
 
 				case TASK_PAUSE: {
 					scheduler_.stop();
+				} break;
+
+				case TASK_MOVE: {
+					stream_.move(tag);
 				} break;
 			}
 		});
@@ -96,6 +101,11 @@ public:
 		scheduler_.add(TASK_PAUSE);
 	}
 
+	void move(int ms)
+	{
+		scheduler_.add(TASK_MOVE, "", nullptr, 0, ms);
+	}
+
 	void setOnEOF(NotifyEvent event) { on_EOF_ = event; }
 	void setOnError(ErrorEvent event) { on_error_ = event; }
 
@@ -116,4 +126,5 @@ private:
 		audio_.close();
 		video_.close();
 	}
+
 };
