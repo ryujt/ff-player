@@ -12,6 +12,7 @@ class Memory;
 typedef function<void()> VoidEvent;
 typedef function<void(const void*)> NotifyEvent;
 typedef function<void(const void*, const string)> StringEvent;
+typedef function<void(const void*, int code, const string)> ErrorEvent;
 typedef function<void(const void*, int)> IntegerEvent;
 typedef function<void(const void*, const Memory*)> MemoryEvent;
 typedef function<void(const void*, const void*, int)> DataEvent;
