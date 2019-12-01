@@ -30,6 +30,8 @@ public:
 				} break;
 
 				case TASK_CLOSE: {
+					scheduler_.stop();
+
 					stream_.close();
 					audio_.close();
 					video_.close();

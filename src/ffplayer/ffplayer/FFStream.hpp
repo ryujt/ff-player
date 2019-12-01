@@ -17,11 +17,14 @@ public:
 
 	void close()
 	{
-
+		avformat_close_input(&context_);
+		context_ = nullptr;
 	}
 
 	AVPacket* read()
 	{
+		if (context_ == nullptr) return nullptr; 
+
 		AVPacket* packet = av_packet_alloc();
 
 		if (av_read_frame(context_, packet) < 0) {

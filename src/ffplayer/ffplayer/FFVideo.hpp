@@ -69,16 +69,26 @@ public:
 
 	void close()
 	{
+		video_.close();
 
+		avcodec_close(context_);
+		context_ = nullptr;
+
+		while (queue_.is_empty() == false) {
+			AVPacket* packet = queue_.pop();
+			av_packet_free(&packet);
+		}
 	}
 
 	void write(AVPacket* packet)
 	{
-		queue_.push(packet);
+		if (context_ != nullptr) queue_.push(packet);
 	}
 
 	void audioSync(int64_t pts)
 	{
+		if (context_ == nullptr) return;
+
 		target_pts_ = pts;
 		thread_->wakeUp();
 	}

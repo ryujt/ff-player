@@ -17,7 +17,13 @@ public:
 		reframe_ = av_frame_alloc();
 
 		worker_.setOnTask([&](int task, const string text, const void* data, int size, int tag){
-			decode_and_play((AVPacket*) data);
+			AVPacket* packet = (AVPacket*) data;
+			if (context_ == nullptr) {
+				av_packet_free(&packet);
+				return;
+			}
+
+			decode_and_play(packet);
 		});
 	}
 
@@ -71,12 +77,15 @@ public:
 
 	void close()
 	{
+		audio_.close();
 
+		avcodec_close(context_);
+		context_ = nullptr;
 	}
 
 	void write(AVPacket* packet)
 	{
-		worker_.add(0, packet);
+		if (context_ != nullptr) worker_.add(0, packet);
 	}
 
 	int getStreamIndex() { return stream_index_; }

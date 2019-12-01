@@ -24,6 +24,8 @@ public:
 	*/
 	bool open(int channels, int sample_rate, int fpb)
 	{
+		clear_audio_buffer();
+
 		channels_ = channels;
 		sample_rate_ = sample_rate;
 		fpb_ = fpb;
@@ -43,6 +45,14 @@ public:
 		}
 
 		return true;
+	}
+
+	/** 오디오 출력장치를 닫는다.
+	*/
+	void close()
+	{
+		SDL_CloseAudio();
+		clear_audio_buffer();
 	}
 
 	/**	오디오를 출력합니다.
@@ -79,6 +89,13 @@ private:
 			delete memory;
 		} else {
 			ZeroMemory(stream,len);
+		}
+	}
+
+	void clear_audio_buffer() {
+		Memory* memory; 
+		while (queue_.is_empty() == false) {
+			if (queue_.pop(memory)) delete memory;
 		}
 	}
 
