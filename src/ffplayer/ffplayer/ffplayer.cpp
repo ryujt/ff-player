@@ -7,6 +7,12 @@ using namespace std;
 int main(int argc, char* argv[])
 {
     FFPlayer player;
+	player.setOnError([](const void *obj, int code, const string msg){
+		printf("\nError - %s \n", msg.c_str());
+	});
+	player.setOnEOF([](const void* obj){
+		printf("\n재생이 끝났습니다. \n");
+	});
 
 	while (true) {
 		string line;
