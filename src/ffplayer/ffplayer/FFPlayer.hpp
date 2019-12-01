@@ -49,8 +49,10 @@ public:
 			if (audio_.isEmpty()) {
 				AVPacket* packet = stream_.read();
 				if (packet != nullptr) {
-					if (packet->stream_index == audio_.getStreamIndex()) audio_.write(packet);
-					else if (packet->stream_index == video_.getStreamIndex()) video_.write(packet);
+					if (packet->stream_index == audio_.getStreamIndex()) {
+						audio_.write(packet);
+						video_.audioSync( audio_.getPTS() ); 
+					} else if (packet->stream_index == video_.getStreamIndex()) video_.write(packet);
 					else av_packet_free(&packet);
 				} else {
 					// TODO: EOF

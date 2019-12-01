@@ -1,6 +1,7 @@
 #pragma once
 
-#include <ryulib/Worker.hpp>
+#include <ryulib/ThreadQueue.hpp>
+#include <ryulib/SimpleThread.hpp>
 #include <ryulib/sdl_window.hpp>
 
 extern "C" {
@@ -15,8 +16,17 @@ public:
 	{
 		frame_ = av_frame_alloc();
 
-		worker_.setOnTask([&](int task, const string text, const void* data, int size, int tag){
-			decode_and_play((AVPacket*) data);
+		thread_ = new SimpleThread([&](SimpleThread* simplethread){
+			while (true) {
+				simplethread->sleepTight();
+
+				AVPacket* packet = queue_.front();
+				while ((packet != NULL) && (getPTS() <= target_pts_)) {
+					packet = queue_.pop();
+					if (packet != NULL) decode_and_play(packet);
+					packet = queue_.front();
+				}
+			}
 		});
 	}
 
@@ -64,24 +74,29 @@ public:
 
 	void write(AVPacket* packet)
 	{
-		worker_.add(0, packet);
+		queue_.push(packet);
+	}
+
+	void audioSync(int64_t pts)
+	{
+		target_pts_ = pts;
+		thread_->wakeUp();
 	}
 
 	int getStreamIndex() { return stream_index_; }
 
-	bool isEmpty()
-	{
-		return true;
-	}
+	int64_t getPTS() { return context_->pts_correction_last_pts; }
 
 private:
 	int stream_index_ = -1;
 	AVCodecParameters* parameters_ = nullptr;
 	AVCodecContext* context_ = nullptr;
 	AVCodec* codec_ = nullptr;
-	Worker worker_;
 	WindowSDL video_;
 	AVFrame* frame_ = nullptr;
+	int64_t target_pts_ = 0;
+	ThreadQueue<AVPacket*> queue_;
+	SimpleThread* thread_ = nullptr;
 
 	void decode_and_play(AVPacket* packet)
 	{

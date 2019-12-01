@@ -83,6 +83,8 @@ public:
 
 	bool isEmpty() { return audio_.getDelayCount() < 2; }
 
+	int64_t getPTS() { return context_->pts_correction_last_pts; }
+
 private:
 	int stream_index_ = -1;
 	AVCodecParameters* parameters_ = nullptr;
@@ -111,7 +113,6 @@ private:
 				return;
 			}
 
-			// ���� ��ȯ
 			reframe_->channel_layout = frame_->channel_layout;
 			reframe_->sample_rate = frame_->sample_rate;
 			reframe_->format = AV_SAMPLE_FMT_FLT;
