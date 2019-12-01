@@ -76,8 +76,10 @@ public:
 		});
 	}
 
-	~FFPlayer()
+	void terminateNow()
 	{
+		video_.terminateNow();
+		audio_.terminateNow();
 		scheduler_.terminateNow();
 	}
 
@@ -105,6 +107,8 @@ public:
 	{
 		scheduler_.add(TASK_MOVE, "", nullptr, 0, ms);
 	}
+
+	void setTargetHandle(void* handle) { video_.setTargetHandle(handle); }
 
 	void setOnEOF(NotifyEvent event) { on_EOF_ = event; }
 	void setOnError(ErrorEvent event) { on_error_ = event; }

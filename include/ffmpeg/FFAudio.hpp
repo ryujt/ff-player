@@ -27,6 +27,12 @@ public:
 		});
 	}
 
+	void terminateNow()
+	{
+		worker_.terminateNow();
+		close();
+	}
+
 	bool open(AVFormatContext* context)
 	{
 		stream_index_ = -1;

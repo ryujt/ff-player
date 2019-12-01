@@ -154,12 +154,6 @@
   <ItemGroup>
     <ClCompile Include="ffplayer.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="FFAudio.hpp" />
-    <ClInclude Include="FFPlayer.hpp" />
-    <ClInclude Include="FFVideo.hpp" />
-    <ClInclude Include="FFStream.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

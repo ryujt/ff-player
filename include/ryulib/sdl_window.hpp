@@ -23,13 +23,18 @@ public:
 		height_ = height;
 
 		SDL_Init(SDL_INIT_EVERYTHING);
-		window_ = SDL_CreateWindow(
-			caption.c_str(),
-			SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED,
-			width, height,
-			SDL_WINDOW_RESIZABLE
-		);
+		
+		if (target_handle_ != nullptr) {
+			window_ = SDL_CreateWindowFrom(target_handle_);
+		} else {
+			window_ = SDL_CreateWindow(
+				caption.c_str(),
+				SDL_WINDOWPOS_UNDEFINED,
+				SDL_WINDOWPOS_UNDEFINED,
+				width, height,
+				SDL_WINDOW_RESIZABLE
+			);
+		}
 		renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
 
 		is_opened_ = true;
@@ -77,11 +82,15 @@ public:
 		SDL_DestroyTexture(texture_);
 	}
 
+	void setTargetHandle(void* handle) { target_handle_ = handle; }
+
 private:
 	bool is_opened_ = false;
 
 	int width_;
 	int height_;
+
+	void* target_handle_ = nullptr;
 
 	SDL_Window* window_;
 	SDL_Renderer* renderer_;

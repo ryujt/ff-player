@@ -18,16 +18,22 @@ public:
 
 		thread_ = new SimpleThread([&](SimpleThread* simplethread){
 			while (true) {
-				simplethread->sleepTight();
-
 				AVPacket* packet = queue_.front();
 				while ((packet != NULL) && (getPTS() <= target_pts_)) {
 					packet = queue_.pop();
 					if (packet != NULL) decode_and_play(packet);
 					packet = queue_.front();
 				}
+
+				simplethread->sleepTight();
 			}
 		});
+	}
+
+	void terminateNow()
+	{
+		thread_->terminateNow();
+		close();
 	}
 
 	bool open(AVFormatContext* context)
@@ -96,6 +102,8 @@ public:
 	int getStreamIndex() { return stream_index_; }
 
 	int64_t getPTS() { return context_->pts_correction_last_pts; }
+
+	void setTargetHandle(void* handle) { video_.setTargetHandle(handle); }
 
 private:
 	int stream_index_ = -1;
