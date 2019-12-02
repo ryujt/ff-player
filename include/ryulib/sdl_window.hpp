@@ -17,8 +17,6 @@ public:
 	*/
 	bool open(string caption, int width, int height)
 	{
-		close();
-
 		width_ = width;
 		height_ = height;
 

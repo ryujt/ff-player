@@ -80,7 +80,7 @@ public:
 	{
 		video_.terminateNow();
 		audio_.terminateNow();
-		scheduler_.terminateNow();
+		scheduler_.terminateAndWait();
 	}
 
 	void open(string filename)

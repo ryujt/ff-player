@@ -34,7 +34,6 @@ public:
 
 	~Scheduler() {
 		stop();
-		delete thread_;
 	}
 
 	void terminateAndWait()

@@ -83,10 +83,10 @@ public:
 
 	void close()
 	{
-		audio_.close();
-
-		avcodec_close(context_);
+		if (context_ != nullptr) avcodec_close(context_);
 		context_ = nullptr;
+
+		audio_.close();
 	}
 
 	void write(AVPacket* packet)

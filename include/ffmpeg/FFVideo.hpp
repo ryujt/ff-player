@@ -34,6 +34,7 @@ public:
 	{
 		thread_->terminateNow();
 		close();
+		video_.close();
 	}
 
 	bool open(AVFormatContext* context)
@@ -75,9 +76,7 @@ public:
 
 	void close()
 	{
-		video_.close();
-
-		avcodec_close(context_);
+		if (context_ != nullptr) avcodec_close(context_);
 		context_ = nullptr;
 
 		while (queue_.is_empty() == false) {

@@ -27,6 +27,9 @@
     <ClInclude Include="ffplayer-gui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FormMain.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ffplayer-gui.cpp">

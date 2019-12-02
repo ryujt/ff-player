@@ -34,13 +34,9 @@ public:
 		thread_ = new SimpleThread(on_thread_execute);
 	}
 
-	~Worker() {
-		delete thread_;
-	}
-
-	void terminateAndWait()
+	void terminate()
 	{
-		thread_->terminateAndWait();
+		thread_->terminate();
 	}
 
 	void terminateNow()
