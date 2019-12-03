@@ -18,6 +18,8 @@ const int ERROR_OPEN = -1;
 
 class FFPlayer {
 public:
+	/** FFPlayer 생성자
+	*/
 	FFPlayer()
 	{
 		scheduler_.setOnTask([&](int task, const string text, const void* data, int size, int tag){
@@ -76,6 +78,8 @@ public:
 		});
 	}
 
+	/** FFPlayer를 완전히 종료시킨다. terminateNow()를 실행하면 모든 작동이 중지되며 다시 실행할 수 없다. 
+	*/
 	void terminateNow()
 	{
 		video_.terminateNow();
@@ -83,34 +87,53 @@ public:
 		scheduler_.terminateAndWait();
 	}
 
+	/** 동영상 파일을 오픈하여 재생할 준비를 한다.
+	@param filename 오픈 할 동영상 파일 이름
+	*/
 	void open(string filename)
 	{
 		scheduler_.add(TASK_OPEN, filename);
 	}
 
+	/** 동영상 파일을 닫는다.
+	*/
 	void close()
 	{
 		scheduler_.add(TASK_CLOSE);
 	}
 
+	/** 오픈된 동영상 파일을 재생한다.
+	*/
 	void play()
 	{
 		scheduler_.add(TASK_PLAY);
 	}
 
+	/** 재생을 일시 멈춘다.
+	*/
 	void pause()
 	{
 		scheduler_.add(TASK_PAUSE);
 	}
 
+	/** 지정된 위치로 이동한다.
+	@param ms 이동 할 위치 (ms 시간 단위)
+	*/
 	void move(int ms)
 	{
 		scheduler_.add(TASK_MOVE, "", nullptr, 0, ms);
 	}
 
+	/** 영상을 표시할 윈도우 핸들을 지정한다. 지정하지 않으면 별도의 윈도우가 생성된다.
+	*/
 	void setTargetHandle(void* handle) { video_.setTargetHandle(handle); }
 
+	/** 동영상이 완전히 재생되었을 때 처리할 이벤트 핸들러를 지정한다.
+	*/
 	void setOnEOF(NotifyEvent event) { on_EOF_ = event; }
+
+	/** 에러가 발생했을 때 처리할 이벤트 핸들러를 지정한다.
+	*/
 	void setOnError(ErrorEvent event) { on_error_ = event; }
 
 private:
