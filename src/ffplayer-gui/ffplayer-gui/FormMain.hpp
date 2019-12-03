@@ -15,6 +15,7 @@
 #include <wx/panel.h>
 #include <wx/frame.h>
 #include <wx/filename.h>
+#include <wx/msgdlg.h>
 #include <ffmpeg/FFPlayer.hpp>
 
 class FormMain : public wxFrame {
@@ -63,12 +64,18 @@ public:
 
 		this->Centre( wxBOTH );
 
-		player_.setTargetHandle( plClient->GetHandle() );
-
 		btOpen->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( FormMain::on_btOpen_Click ), NULL, this );
 		btClose->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( FormMain::on_btClose_Click ), NULL, this );
 		btPlay->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( FormMain::on_btPlay_Click ), NULL, this );
 		btPause->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler( FormMain::on_btPause_Click ), NULL, this );
+
+		player_.setTargetHandle( plClient->GetHandle() );
+		player_.setOnError([](const void* obj, int code, const string msg){
+			wxMessageBox(msg, wxT("Error"), wxICON_INFORMATION);
+		});
+		player_.setOnEOF([](const void* obj){
+			wxMessageBox(wxT("끝까지 재생하였습니다."), wxT("Error"), wxICON_INFORMATION);
+		});
 	}
 
 	~FormMain()
