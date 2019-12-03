@@ -46,7 +46,6 @@ public:
 		btPause = new wxButton( plTop, wxID_ANY, wxT("Pause"), wxDefaultPosition, wxDefaultSize, 0 );
 		bSizer2->Add( btPause, 0, wxALL, 5 );
 
-
 		plTop->SetSizer( bSizer2 );
 		plTop->Layout();
 		bSizer2->Fit( plTop );
@@ -57,7 +56,6 @@ public:
 		plClient->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
 
 		bSizer1->Add( plClient, 1, wxEXPAND | wxALL, 5 );
-
 
 		this->SetSizer( bSizer1 );
 		this->Layout();
