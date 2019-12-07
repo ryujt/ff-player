@@ -96,7 +96,7 @@ public:
 
 	int getStreamIndex() { return stream_index_; }
 
-	bool isEmpty() { return audio_.getDelayCount() < 2; }
+	bool isEmpty() { return audio_.getDelayCount() < 4; }
 
 	int64_t getPTS() 
 	{ 
